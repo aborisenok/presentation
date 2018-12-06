@@ -1,0 +1,920 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/serif.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<link rel="stylesheet" href="css/style.css">
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- 1 Topic -->
+				<section>
+					<h1>Event Loop</h1>
+					<p>
+						<small>Created by <a href="http://github.com/aborisenok">Aleksey Borisenok</a></small>
+					</p>
+				</section>
+
+				<!-- 2 Single thread -->
+				<section>	
+					<h2>Synchronous flow</h2>
+					<img src="img/1.png" width="40%">
+					<p>Only one working thread</p>
+				</section>
+
+				<section>	
+					<h2>Asynchronous flow</h2>
+					<img src="img/2.png" width="40%">
+					<p>Several working threads</p>
+				</section>
+
+				<section>	
+					<h2>Who are you JS?</h2>
+					<img src="img/3.jpg">
+				</section>
+
+				<section>	
+					<section id="fragments" data-transition="none">
+						<h2>JavaScript Runtime</h2>
+						<img src="img/6(0).png">
+					</section>
+					<section id="fragments" data-transition="none">
+						<h3>JavaScript Runtime</h3>
+						<div>
+							<img src="img/6(1).png" style="float: left; margin-right: 20px">
+							<p style="text-align: left;"><strong>Heap</strong> - a large region in memory, where we can store our data.</p>
+						</div>
+					</section>
+					<section id="fragments" data-transition="none">
+						<h3>JavaScript Runtime</h3>
+						<div>
+							<img src="img/6(2).png" style="float: left; margin-right: 20px">
+							<p style="text-align: left;"><strong>Heap</strong> - a large region in memory, where we can store our data.</p>
+							<p style="text-align: left;"><strong>Call Stack</strong> - a data structure which records the function calls.</p>
+						</div>
+					</section>
+				</section>
+
+				<!-- Slide One CallStack-->
+				<section>
+					<h3>JavaScript Runtime example</h3>
+					<div class="example scheme-short">
+						<div class="code-block-short">
+							<pre style="box-shadow: none;"><code class="hljs" data-trim contenteditable>
+function never(){
+  console.log("never");
+}
+
+function stop(){
+  never();
+  console.log("stop");
+}
+
+function codding(){
+  stop();
+  console.log("codding");
+}
+
+codding();
+							</code></pre>
+						</div>
+					</div>
+					<section id="fragments" data-transition="none">
+					    <div class="example scheme-short">
+
+							<div class="callstack-block-short">
+								<div class="block-name">callstack:</div>
+								<p class="task fragment">codding()</p>
+								<p class="task fragment">stop()</p>
+								<p class="task fragment">never()</p>
+								<p class="task fragment fade-in-then-out">console.log("never");</p>
+							</div>
+							<div class="console-block-short">
+								<div class="block-name">console:</div>
+								<div class="task fragment">never</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-short">
+					
+							<div class="callstack-block-short">
+								<div class="block-name">callstack:</div>
+								<p class="task">codding()</p>
+								<p class="task">stop()</p>
+								<p class="task fragment fade-in-then-out">console.log("stop");</p>
+							</div>
+							<div class="console-block-short">
+								<div class="block-name">console:</div>
+								<div class="task">never</div>
+								<div class="task fragment">stop</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-short">
+						
+							<div class="callstack-block-short">
+								<div class="block-name">callstack:</div>
+								<p class="task">codding()</p>
+								<p class="task fragment fade-in-then-out">console.log("codding");</p>
+							</div>
+							<div class="console-block-short">
+								<div class="block-name">console:</div>
+								<div class="task">never</div>
+								<div class="task">stop</div>
+								<div class="task fragment">codding</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+							<div class="example scheme-short">
+						
+							<div class="callstack-block-short">
+								<div class="block-name">callstack:</div>
+							</div>
+							<div class="console-block-short">
+								<div class="block-name">console:</div>
+								<div class="task">never</div>
+								<div class="task">stop</div>
+								<div class="task">codding</div>
+							</div>
+						</div>
+					</section>
+		    </section>
+
+		    <section>
+		    	<section id="fragments" data-transition="none">
+					<h3>JavaScript Runtime</h3>
+					<div>
+						<img src="img/7.jpg" width="80%">
+					</div>
+				</section>
+
+				<section id="fragments" data-transition="none">
+					<h3>JavaScript Runtime</h3>
+					<div>
+						<img src="img/7.jpg" width="70%">
+						<p><i>setTimeout</i> and <i>XMLHttpRequest</i> are doomed.</p>
+					</div>
+				</section>
+			</section>
+
+			<section>	
+				<h3>How browser can be blocked</h3>
+				<img src="img/8.gif" width="100%">
+			</section>
+
+			<section>	
+					<section id="fragments" data-transition="none">
+						<h3>Overview of major components in a browser</h3>
+						<img src="img/9(0).png" width="50%">
+					</section>
+					<section id="fragments" data-transition="none">
+						<h3>Overview of major components in a browser</h3>
+						<img src="img/9(1).png" width="50%">
+					</section>
+					<section id="fragments" data-transition="none">
+						<h3>Overview of major components in a browser</h3>
+						<img src="img/9(2).png" width="50%">
+					</section>
+					<section id="fragments" data-transition="none">
+						<h3>Overview of major components in a browser</h3>
+						<img src="img/9(3).png" width="50%">
+					</section>
+				</section>
+
+				<section>	
+				<h3>Painfully shy Event Loop</h3>
+				<img src="img/10.jpg" width="60%">
+			</section>
+
+
+		<!-- Slide Two SetTimeout 5000sec-->
+				<section>
+					<h3>Event Loop</h3>
+					<div class="example scheme-full">
+						<div class="code-block">
+							<pre style="box-shadow: none;"><code class="hljs" data-trim contenteditable>
+function motivateMe(){
+  console.log("deadline");
+
+  setTimeout(function cb(){
+    console.log("comming");
+  }, 5000);
+
+  console.log("is");
+}
+
+motivateMe();
+							</code></pre>
+						</div>
+					</div>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>	 
+						  		<p class="task fragment">motivateMe()</p>
+						  		<p class="task fragment fade-in-then-out">console.log("deadline")</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+					  		</div>
+								<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+								<div class="task-block">
+								<div class="block-name">callback queue:</div>
+					 		</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">motivateMe()</p>
+								<p class="task fragment">setTimeout(cb)</p>
+							</div>
+								<div class="api-block">
+							<div class="block-name">webapis:</div>
+								<p class="task fragment">timer<img src="img/loading.gif" style="border: none; box-shadow: none;">cb</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+							</div>
+								<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+								<div class="task-block">
+								<div class="block-name">callback queue:</div>
+					 		</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">motivateMe()</p>
+								<p class="task fragment fade-in-then-out">console.log("is")</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task">timer<img src="img/loading.gif" style="border: none; box-shadow: none;">cb</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">deadline</p>
+					  		</div>
+								<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+								<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task fragment fade-out">motivateMe()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task">timer<img src="img/loading.gif" style="border: none; box-shadow: none;">cb</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+								<p class="task">is</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+								<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+  						<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+							</div>
+  						<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task">timer<img src="img/checked.png" style="border: none; box-shadow: none;">cb</p>
+  						</div>
+  						<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+								<p class="task">is</p>
+							</div>
+  							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+ 							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task fragment">cb</p>
+							 </div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+  						<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+							</div>
+  							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+  						<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+								<p class="task">is</p>
+							</div>
+  						<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+ 							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+  						<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">cb()</p>
+								<p class="task fragment fade-in-then-out">console.log("comming")</p>
+							</div>
+  							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+  						<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+								<p class="task">is</p>
+							</div>
+  							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+ 							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task fragment fade-out">cb()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">deadline</p>
+								<p class="task">is</p>
+								<p class="task">comming</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+				</section>
+
+				<!-- Slide Three setTimeout 0  -->
+				<section>
+					<h3>Event Loop</h3>
+					<div class="example scheme-full">
+						<div class="code-block">
+							<pre style="box-shadow: none;"><code class="hljs" data-trim contenteditable>
+function raiseSalary(){
+  console.log("never");
+	
+  setTimeout(function cb(){
+    console.log("dreaming");
+  }, 0);
+	
+  console.log("stop");
+}
+
+raiseSalary();
+							</code></pre>
+						</div>
+					</div>
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+						  <div class="callstack-block">
+								<div class="block-name">callstack:</div>	 
+								<p class="task fragment">raiseSalary()</p>
+								<p class="task fragment fade-in-then-out">console.log("never")</p>
+						  </div>
+						  <div class="api-block">
+								<div class="block-name">webapis:</div>
+						  </div>
+						  <div class="console-block">
+								<div class="block-name">console:</div>
+						  </div>
+						  <div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+						 	<div class="task-block">
+								<div class="block-name">callback queue:</div>
+						 	</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">raiseSalary()</p>
+								<p class="task fragment">setTimeout(cb)</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task fragment">timer<img src="img/checked.png" style="border: none; box-shadow: none;">cb</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">never</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task fragment">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">raiseSalary()</p>
+								<p class="task fragment fade-in-then-out">console.log("stop")</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">never</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task fragment fade-out">raiseSalary()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">never</p>
+								<p class="task">stop</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">cb()</p>
+								<p class="task fragment fade-in-then-out">console.log("dreaming")</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">never</p>
+								<p class="task">stop</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task fragment fade-out">cb()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">never</p>
+								<p class="task">stop</p>
+								<p class="task">dreaming</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+				</section>
+	
+		<!-- Slide Four setTimeout and promise  -->
+			    <section>
+						<h3>Event Loop</h3>
+						<div class="example scheme-full">
+							<div class="code-block">
+									<pre style="box-shadow: none; font-size: 0.45em"><code class="hljs" data-trim contenteditable>
+function escapeFromWork() {
+  console.log("always");
+		
+  setTimeout(function cb(){
+    console.log("heart");
+  }, 0);
+		
+  new Promise((res, rej) => {
+    res();
+  }).then(() => {
+    console.log("your");
+  })
+		
+  console.log("follow")
+}
+escapeFromWork();
+							</code></pre>
+						</div>
+					</div>
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+						  <div class="callstack-block">
+								<div class="block-name">callstack:</div>	 
+								<p class="task fragment">escapeFromWork()</p>
+								<p class="task fragment fade-in-then-out">console.log("always")</p>
+						  </div>
+						  <div class="api-block">
+								<div class="block-name">webapis:</div>
+						  </div>
+						  <div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task fragment">always</p>
+						  </div>
+						  	<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+						 	<div class="task-block">
+								<div class="block-name">callback queue:</div>
+						 	</div>
+						</div>
+					</section>
+
+				    <section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">escapeFromWork()</p>
+								<p class="task">setTimeout(cb)</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task fragment">timer<img src="img/checked.png" style="border: none; box-shadow: none;">cb</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div>
+								<p class="task">always</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">escapeFromWork()</p>
+								<p class="task fragment">new Promise()</p>
+								<p class="task fragment">innerPromise(res, rej)</p>
+								<p class="task fragment fade-in-then-out">res()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task fragment">promise <img src="img/loading.gif" style="border: none; box-shadow: none;">res</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">escapeFromWork()</p>
+								<p class="task">new Promise()</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+								<p class="task">promise<img src="img/checked.png" style="border: none; box-shadow: none;">res</p>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">escapeFromWork()</p>
+								<p class="task fragment fade-in-then-out">console.log("follow")</p>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task fragment">follow</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">res</p>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+							</div>
+							<div class="api-block">
+							 	<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task">follow</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task ">res</p>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">res()</p>
+								<p class="task fragment fade-in-then-out">console.log("your");</p>
+							</div>
+							<div class="api-block">
+							<div class="block-name">webapis:</div>
+
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task">follow</p>
+								<p class="task fragment">your</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+							</div>
+							<div class="api-block">
+								<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task">follow</p>
+								<p class="task">your</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+								<p class="task">cb</p>
+							</div>
+						</div>
+					</section>
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+								<p class="task">cb()</p>
+								<p class="task fragment fade-in-then-out">console.log("heart")</p>
+							</div>
+							<div class="api-block">
+							 	<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task">follow</p>
+								<p class="task">your</p>
+								<p class="task fragment">heart</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							 <div class="task-block">
+							<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+
+
+					<section id="fragments" data-transition="none">
+						<div class="example scheme-full">
+							<div class="code-block"></div>
+							<div class="callstack-block">
+								<div class="block-name">callstack:</div>
+							</div>
+							<div class="api-block">
+							 	<div class="block-name">webapis:</div>
+							</div>
+							<div class="console-block">
+								<div class="block-name">console:</div> 
+								<p class="task">always</p>
+								<p class="task">follow</p>
+								<p class="task">your</p>
+								<p class="task">heart</p>
+							</div>
+							<div class="event-block">
+								<p class="task">event loop <img src="img/circle.png"></p>
+							</div>
+							<div class="task-block">
+								<div class="block-name">callback queue:</div>
+							</div>
+						</div>
+					</section>
+				</section>
+
+				<section>	
+					<img src="img/11.jpg" width="100%">
+				</section>
+
+				<section>	
+					<h2>Thank you!</h2>
+				</section>
+	        </div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
